@@ -1,38 +1,42 @@
-export default function Todo(props) {
-  const { todo, setTodo } = props;
-
+export default function Todo({ todo, setTodos }) {
   const updateTodo = async (todoId, todoStatus) => {
-    const res = await fetch(`/api/todo/${todoId}`, {
-      method: "PUT",
-      body: JSON.stringify({ status: todoStatus }),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-
-    // handlr the toggle box
-    const responseData = await res.json();
-    if (responseData.acknowledged) {
-      setTodo((currentTodo) => {
-        return currentTodo.map((currentTodo) => {
-          if (currentTodo._id === todoId) {
-            return { ...currentTodo, status: !currentTodo.status }; //  it returns a new object with all the current todo's properties, but with the status toggled
-          }
-          return currentTodo;
-        });
+    try {
+      const res = await fetch(`/api/todo/${todoId}`, {
+        method: "PUT",
+        body: JSON.stringify({ status: !todoStatus }),
+        headers: {
+          "Content-Type": "application/json",
+        },
       });
+
+      const responseData = await res.json();
+      if (responseData.acknowledged) {
+        setTodos((currentTodos) =>
+          currentTodos.map((currentTodo) =>
+            currentTodo._id === todoId
+              ? { ...currentTodo, status: !currentTodo.status }
+              : currentTodo
+          )
+        );
+      }
+    } catch (error) {
+      console.error("Failed to update todo:", error);
     }
   };
 
   const deleteTodo = async (todoId) => {
-    const res = await fetch(`/api/todo/${todoId}`, {
-      method: "DELETE",
-    });
-    const responseDate = await res.json();
-    if (responseDate.acknowledged) {
-      setTodo((currentTodo) => {
-        return currentTodo.filter((currentTodo) => currentTodo._id !== todoId);
+    try {
+      const res = await fetch(`/api/todo/${todoId}`, {
+        method: "DELETE",
       });
+      const responseData = await res.json();
+      if (responseData.acknowledged) {
+        setTodos((currentTodos) =>
+          currentTodos.filter((currentTodo) => currentTodo._id !== todoId)
+        );
+      }
+    } catch (error) {
+      console.error("Failed to delete todo:", error);
     }
   };
 

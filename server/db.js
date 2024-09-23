@@ -26,6 +26,6 @@ const connectDB = async () => {
   return client;
 };
 
-const getCopnnectedClient = () => client;
+const getConnectedClient = () => client;
 
-module.exports = { connectDB, getCopnnectedClient };
+module.exports = { connectDB, getConnectedClient };

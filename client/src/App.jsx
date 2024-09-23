@@ -1,33 +1,41 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import Todo from "./Task";
 
 export default function App() {
-  const [todo, setTodo] = useState("");
+  const [todos, setTodos] = useState([]);
   const [content, setContent] = useState("");
 
-  useEffect(() => {
-    async function getTodo() {
+  const fetchTodos = useCallback(async () => {
+    try {
       const res = await fetch("/api/todo");
-      const todo = await res.json();
-
-      setTodo(todo);
+      const fetchedTodos = await res.json();
+      setTodos(fetchedTodos);
+    } catch (error) {
+      console.error("Failed to fetch todos:", error);
     }
-    getTodo();
   }, []);
 
+  useEffect(() => {
+    fetchTodos();
+  }, [fetchTodos]);
+
   const createNewTask = async (e) => {
-    e.preventDefault(); // Prevent refresh on form submission
+    e.preventDefault();
     if (content.length > 3) {
-      const res = await fetch("/api/todo", {
-        method: "POST",
-        body: JSON.stringify({ todo: content }),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      const newTask = await res.json();
-      setContent("");
-      setTodo([...todo, newTask]); // add new taks into current
+      try {
+        const res = await fetch("/api/todo", {
+          method: "POST",
+          body: JSON.stringify({ todo: content }),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        const newTask = await res.json();
+        setContent("");
+        setTodos((prevTodos) => [...prevTodos, newTask]);
+      } catch (error) {
+        console.error("Failed to create new task:", error);
+      }
     }
   };
 
@@ -42,18 +50,17 @@ export default function App() {
           placeholder="Enter a new task"
           className="form__input"
           required
+          minLength={4}
         />
         <button className="submitButton" type="submit">
           Create
         </button>
       </form>
 
-      {/* {todo.length > 0 && <pre>{JSON.stringify(todo, null, 2)}</pre>} */}
       <div className="todos">
-        {todo.length > 0 &&
-          todo.map((todo) => (
-            <Todo key={todo._id} todo={todo} setTodo={setTodo} />
-          ))}
+        {todos.map((todo) => (
+          <Todo key={todo._id} todo={todo} setTodos={setTodos} />
+        ))}
       </div>
     </main>
   );
