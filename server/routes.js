@@ -1,115 +1,69 @@
 const express = require("express");
-const { ObjectId } = require("mongodb");
-const { getConnectedClient } = require("./db");
 
 const router = express.Router();
 
+const { getConnectedClient } = require("./db");
+const { ObjectID, ObjectId } = require("mongodb");
+
+// transform _id to ObjectID
+// mongoDB tables are called collections
+// each object in the collection is called a document
 const getCollection = () => {
   const client = getConnectedClient();
-  return client.db("tododb").collection("todo");
+  const collection = client.db("tododb").collection("todo");
+  return collection;
 };
 
-// Middleware for error handling
-const asyncHandler = (fn) => (req, res, next) =>
-  Promise.resolve(fn(req, res, next)).catch(next);
-//  ensures that the result of fn is always a Promise
-// If the Promise is rejected,  it calls the next function pass errors to error-handling middleware
+// GET
 
-// GET all todos
-router.get(
-  "/todo",
-  asyncHandler(async (req, res) => {
-    const collection = getCollection();
-    const todos = await collection.find({}).toArray();
-    res.status(200).json(todos);
-  })
-);
+router.get("/todo", async (req, res) => {
+  const collection = getCollection();
+  const todo = await collection.find({}).toArray();
+  res.status(200).json(todo);
+});
 
-// GET single todo
-router.get(
-  "/todo/:id",
-  asyncHandler(async (req, res) => {
-    const collection = getCollection();
-    const _id = new ObjectId(req.params.id);
-    const todo = await collection.findOne({ _id });
+// POST
+router.post("/todo", async (req, res) => {
+  const collection = getCollection();
+  let { todo } = req.body;
 
-    if (!todo) {
-      return res.status(404).json({ message: "Todo not found" });
-    }
+  if (!todo) {
+    return res.status(400).json({ message: "you have nothing to do" });
+  }
 
-    res.status(200).json(todo);
-  })
-);
+  todo = typeof todo === "string" ? todo : JSON.stringify(todo);
 
-// POST new todo
-router.post(
-  "/todo",
-  asyncHandler(async (req, res) => {
-    const collection = getCollection();
-    const { todo } = req.body;
+  const newTodo = await collection.insertOne({ todo, status: false });
 
-    if (!todo) {
-      return res.status(400).json({ message: "Todo content is required" });
-    }
+  res.status(201).json({ todo, status: false, _id: newTodo.insertedId });
+});
 
-    const todoString = typeof todo === "string" ? todo : JSON.stringify(todo);
-    const newTodo = await collection.insertOne({
-      todo: todoString,
-      status: false,
-    });
+// Delete
+router.delete("/todo/:id", async (req, res) => {
+  const collection = getCollection();
+  const _id = new ObjectId(req.params.id);
 
-    res
-      .status(201)
-      .json({ todo: todoString, status: false, _id: newTodo.insertedId });
-  })
-);
+  const deletedTodo = await collection.deleteOne({ _id });
 
-// DELETE todo
-router.delete(
-  "/todo/:id",
-  asyncHandler(async (req, res) => {
-    const collection = getCollection();
-    const _id = new ObjectId(req.params.id);
+  res.status(200).json(deletedTodo);
+});
 
-    const result = await collection.deleteOne({ _id });
+// PUT = update
+router.put("/todo/:id", async (req, res) => {
+  const collection = getCollection();
+  const _id = new ObjectId(req.params.id);
+  const { status } = req.body;
 
-    if (result.deletedCount === 0) {
-      return res.status(404).json({ message: "Todo not found" });
-    }
+  if (typeof status !== "boolean") {
+    return res.status(400).json({ message: "status must be a boolean" });
+  }
 
-    res.status(200).json({ message: "Todo deleted successfully" });
-  })
-);
+  const updatedTodo = await collection.updateOne(
+    { _id },
+    { $set: { status: !status } }
+  );
 
-// PUT (update) todo
-router.put(
-  "/todo/:id",
-  asyncHandler(async (req, res) => {
-    const collection = getCollection();
-    const _id = new ObjectId(req.params.id);
-    const { status } = req.body;
-
-    if (typeof status !== "boolean") {
-      return res.status(400).json({ message: "Status must be a boolean" });
-    }
-
-    const result = await collection.updateOne(
-      { _id },
-      { $set: { status: !status } }
-    );
-
-    if (result.matchedCount === 0) {
-      return res.status(404).json({ message: "Todo not found" });
-    }
-
-    res.status(200).json({ message: "Todo updated successfully" });
-  })
-);
-
-// Error handling middleware
-router.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({ message: "An unexpected error occurred" });
+  res.status(201).json(updatedTodo);
 });
 
 module.exports = router;
