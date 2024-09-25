@@ -1,2 +1,229 @@
-@import url(https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&display=swap);*,:after,:before{box-sizing:border-box}*{margin:0}body{-webkit-font-smoothing:antialiased;line-height:1.5}canvas,img,picture,svg,video{display:block;max-width:100%}button,input,select,textarea{font:inherit}h1,h2,h3,h4,h5,h6,p{overflow-wrap:break-word}body{background-color:#001f29;background-image:url(https://www.transparenttextures.com/patterns/dark-exa.png);color:#faebd7;font-family:Merriweather,serif}.container{margin:0 auto;max-width:1200px}.title{font-size:3rem;padding:5rem 0 1rem;text-align:center}.todos{align-items:center;display:flex;flex-direction:column;gap:1rem}.todo{align-items:flex-start;background-color:#f8f7f71a;border-radius:.25rem;display:flex;font-size:1rem;justify-content:space-between;overflow-wrap:break-word;padding:.7rem 1rem;width:50%;word-break:break-word;&:hover{background-color:#f8f7f733}}.toggle{align-self:center;display:flex;flex-shrink:0;gap:.5rem;padding-left:.2rem}.todo__delete,.todo__status{background:none;border:none;color:#faebd7;cursor:pointer;line-height:1;padding:0;transform:all .3s;transition:all .2s;&:hover{transform:scale(1.18)}}.todo__status{font-size:1.3rem}.form{display:flex;gap:.5rem;margin:1rem auto;width:50%}.form__input{border:none;border-radius:.25rem;flex:1 1;outline:none;padding:.5rem .75rem;&:focus,&:hover{background-color:#ffffffd9}}.submitButton{background-color:#c8eaf499;border:none;border-radius:.25rem;color:#faebd7;cursor:pointer;transition:all .15s;&:hover{background-color:#c8eaf44d}}@media (max-width:420px){.title{font-size:2.5rem}.form,.todo{width:95%}.todo{font-size:1.2rem}}
+@import url("https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&display=swap");
+
+/* CSS RESET */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+}
+
+body {
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+img,
+picture,
+video,
+canvas,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+input,
+button,
+textarea,
+select {
+  font: inherit;
+}
+
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  overflow-wrap: break-word;
+}
+
+/* APP */
+body {
+  background-color: #001f29;
+  background-image: url("https://www.transparenttextures.com/patterns/dark-exa.png");
+  color: antiquewhite;
+  font-family: "Merriweather", serif;
+}
+
+/* CONTAINER */
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* todo -list */
+.title {
+  text-align: center;
+  font-size: 3rem;
+  padding: 5rem 0 1rem;
+}
+
+.todos {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.todo {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start; /* Changed from default stretch */
+  padding: 0.7rem 1rem;
+  background-color: rgba(248, 247, 247, 0.1);
+  width: 50%;
+  font-size: 1rem;
+  border-radius: 0.25rem;
+  word-break: break-word; /* Added this line */
+  overflow-wrap: break-word; /* Added this line */
+
+  &:hover {
+    background-color: rgba(248, 247, 247, 0.2);
+  }
+}
+
+.toggle {
+  display: flex;
+  gap: 0.5rem;
+  flex-shrink: 0;
+  align-self: center;
+  padding-left: 0.2rem;
+}
+
+.todo__status,
+.todo__delete {
+  border: none;
+  padding: 0;
+  line-height: 1;
+  cursor: pointer;
+  transform: all 0.3s;
+  background: none;
+  color: antiquewhite;
+  transition: all 0.2s;
+
+  &:hover {
+    transform: scale(1.18);
+  }
+}
+
+.todo__status {
+  font-size: 1.3rem;
+}
+
+.form {
+  display: flex;
+  gap: 0.5rem;
+  width: 50%;
+  margin: 1rem auto;
+}
+
+.form__input {
+  flex: 1;
+  padding: 0.5rem 0.75rem;
+  border: none;
+  border-radius: 0.25rem;
+  outline: none;
+
+  &:focus,
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.85);
+  }
+}
+
+.submitButton {
+  border: none;
+  background-color: rgba(200, 234, 244, 0.6);
+  cursor: pointer;
+  color: antiquewhite;
+  border-radius: 0.25rem;
+  transition: all 0.15s;
+
+  &:hover {
+    background-color: rgba(200, 234, 244, 0.3);
+  }
+}
+
+@media (max-width: 420px) {
+  .title {
+    font-size: 2.5rem;
+  }
+
+  .form {
+    width: 95%;
+  }
+
+  .todo {
+    width: 95%;
+    font-size: 1.2rem;
+  }
+}
+
+/* footer */
+ul {
+  display: inline-grid;
+  grid-auto-flow: row;
+  grid-gap: 24px;
+  justify-items: center;
+  margin: auto;
+}
+
+@media (min-width: 500px) {
+  ul {
+    grid-auto-flow: column;
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    opacity: 0.8;
+  }
+}
+
+a {
+  color: white;
+  text-decoration: none;
+  box-shadow: inset 0 -1px 0 hsla(0, 0%, 100%, 0.4);
+}
+
+a:hover {
+  box-shadow: inset 0 -1.2em 0 hsla(0, 0%, 100%, 0.4);
+}
+
+li:last-child {
+  grid-column: 1 / 2;
+  grid-row: 1 / 2;
+}
+
+li:hover ~ li p {
+  animation: wave-animation 0.3s infinite;
+}
+
+#footer {
+  position: fixed;
+  bottom: 20px;
+  display: table;
+  text-align: center;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+@keyframes wave-animation {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(20deg);
+  }
+  75% {
+    transform: rotate(-15deg);
+  }
+}
+
 /*# sourceMappingURL=main.32958e45.css.map*/
